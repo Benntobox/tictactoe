@@ -4,3 +4,6 @@ var addButton = function () {
   document.appendChild(button);
 }
 
+var updateButton = function(button) {
+  button.innerHTML = "X";
+}
