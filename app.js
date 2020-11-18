@@ -1,13 +1,13 @@
-let p1 = true;
-let p1Board = [];
-let p2Board = [];
+// TicTacToe game logic
+// Benny Boyle, 11/2020
+
+// DOM 
 let indexes = [0, 1, 2];
-let winningBoards = [['0', '1', '2'], ['3', '4', '5'], ['6', '7', '8'], ['0', '3', '6'], 
-                    ['1', '4', '7'], ['2', '5', '8'], ['0', '4', '8'], ['2', '4', '6']];
+let defaultVal = '--';
 
 var makeButton = function (...classnames) {
   let button = document.createElement('button');
-  button.innerHTML = 'E';
+  button.innerHTML = defaultVal;
   button.onclick = updateButton.bind(button);
   button.classList.add('button');
   classnames.map(classname => button.classList.add(classname));
@@ -15,14 +15,9 @@ var makeButton = function (...classnames) {
 }
 
 var updateButton = function() {
-  console.log('pressed');
-  this.innerHTML = p1 ? 'X' : 'O';
+  this.innerHTML = p1Turn() ? 'X' : 'O';
   this.disabled = true;
-  let buttonVal = this.classList[1];
-  if (p1) { p1Board.push(buttonVal); }
-  else { p2Board.push(buttonVal); }
-  gameEndCheck();
-  p1 = !p1;
+  moveUpdate(this.classList[1]);
 }
 
 var addAllButtons = function () {
@@ -49,43 +44,71 @@ var buttonDisable = function (button) {
 
 var buttonEnable = function (button) {
   button.disabled = false;
-  button.innerHTML = 'E';
+  button.innerHTML = defaultVal;
+}
+
+var gameEnd = function () {
+  modifyAllButtons(buttonDisable);
+}
+
+var reset = function () {
+  modifyAllButtons(buttonEnable);
+  document.getElementsByClassName('result')[0].innerHTML = 'Game in progress!';
+  gameReset();
+}
+
+// Logic 
+let p1 = true;
+let p1Board = [];
+let p2Board = [];
+let winningBoards = [['0', '1', '2'], ['3', '4', '5'], ['6', '7', '8'], ['0', '3', '6'], 
+                    ['1', '4', '7'], ['2', '5', '8'], ['0', '4', '8'], ['2', '4', '6']];
+
+var moveUpdate = function(pos) {
+  p1 ? p1BoardUpdate(pos) : p2BoardUpdate(pos);
+  p1 = !p1;
+  gameEndCheck();
 }
 
 var gameEndCheck = function () {
   let result = document.getElementsByClassName('result')[0];
-
   if (winningBoards.reduce((result, board) => result = result || arraysEqual(board, p1Board), false)) { 
-    console.log('p1 wins');
-    modifyAllButtons(buttonDisable);
+    gameEnd();
     result.innerHTML = 'P1 Wins!'; 
   } else if (winningBoards.reduce((result, board) => result = result || arraysEqual(board, p2Board), false)) { 
     console.log('p2 wins');
-    modifyAllButtons(buttonDisable);
+    gameEnd();
     result.innerHTML = 'P2 Wins!'; 
   } else if (p1Board.length === 5) {
     console.log('tie');
-    modifyAllButtons(buttonDisable);
-    result.innerHTML = "It's a Tie!'";
+    gameEnd();
+    result.innerHTML = "It's a Tie!";
   }
 }
 
 var gameReset = function () {
-  modifyAllButtons(buttonEnable);
-  document.getElementsByClassName('result')[0].innerHTML = '';
   p1Board = [];
   p2Board = [];
   p1 = true;
 }
 
+var p1Turn = function () {
+  return p1;
+}
+
+var p1BoardUpdate = function (val) {
+  p1Board.push(val);
+}
+
+var p2BoardUpdate = function (val) {
+  p2Board.push(val);
+}
+
+// Helper Functions
 var arraysEqual = function (a, b) {
   return a.reduce((result, val) => result = result && b.includes(val), true);
 }
 
-var subarrIncluded = function (arr, subarr) {
-  if (arr.length > 0 && subarr.length === 0) { return false; }
-  return arr.reduce((finder, val) => finder = finder || subarr.includes(val), true);
-}
-
+// Initial setup call
 addAllButtons();
 
