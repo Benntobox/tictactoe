@@ -55,11 +55,11 @@ var buttonEnable = function (button) {
 var gameEndCheck = function () {
   let result = document.getElementsByClassName('result')[0];
 
-  if (winningBoards.reduce((result, board) => result = result || subarrIncluded(p1Board, board), false)) { 
+  if (winningBoards.reduce((result, board) => result = result || arraysEqual(board, p1Board), false)) { 
     console.log('p1 wins');
     modifyAllButtons(buttonDisable);
     result.innerHTML = 'P1 Wins!'; 
-  } else if (winningBoards.reduce((result, board) => result = result || subarrIncluded(p2Board, board), false)) { 
+  } else if (winningBoards.reduce((result, board) => result = result || arraysEqual(board, p2Board), false)) { 
     console.log('p2 wins');
     modifyAllButtons(buttonDisable);
     result.innerHTML = 'P2 Wins!'; 
@@ -79,13 +79,11 @@ var gameReset = function () {
 }
 
 var arraysEqual = function (a, b) {
-  return a.length === b.length &&  
-          a.reduce((result, val) => result = result && b.includes(val), true) && 
-          b.reduce((result, val) => result = result && a.includes(val), true);
+  return a.reduce((result, val) => result = result && b.includes(val), true);
 }
 
 var subarrIncluded = function (arr, subarr) {
-  if (arr.length > 0 && subarr.length === 0) { return false;}
+  if (arr.length > 0 && subarr.length === 0) { return false; }
   return arr.reduce((finder, val) => finder = finder || subarr.includes(val), true);
 }
 
